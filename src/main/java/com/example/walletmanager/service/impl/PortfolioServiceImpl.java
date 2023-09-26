@@ -1,5 +1,7 @@
 package com.example.walletmanager.service.impl;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.example.walletmanager.entity.Portfolio;
@@ -22,6 +24,11 @@ public class PortfolioServiceImpl implements PortfolioService {
     @Override
     public Portfolio getPortfolioById(Long id) {
         return portfolioRepository.findById(id).get();
+    }
+
+    @Override
+    public List<Portfolio> findAllPortfolios() {
+        return portfolioRepository.findAll();
     }
 
     

@@ -9,7 +9,7 @@ public interface UserService {
     
     String authenticate(String email, String password);
     
-    User findById(Long id);
+    User findUserById(Long id);
 
     User findByEmail(String email);
 

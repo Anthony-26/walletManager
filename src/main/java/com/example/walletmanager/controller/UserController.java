@@ -5,6 +5,7 @@ import com.example.walletmanager.service.impl.UserServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +20,8 @@ public class UserController {
 
     @GetMapping("/profile")
     public ResponseEntity<User> getProfile(@RequestParam Long userId) {
-        User user = userServiceImpl.findById(userId);
-        return ResponseEntity.ok(user);
+        User user = userServiceImpl.findUserById(userId);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @PutMapping("/profile")

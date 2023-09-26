@@ -18,7 +18,7 @@ import com.example.walletmanager.service.impl.PortfolioServiceImpl;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/portfolio")
+@RequestMapping("/api/portfolios")
 @RequiredArgsConstructor
 public class PortfolioController {
     
@@ -26,7 +26,7 @@ public class PortfolioController {
     private final JwtService jwtService;
     private final UserRepository userRepository;
 
-    @PostMapping("/createPortfolio")
+    @PostMapping("/portfolio")
     public ResponseEntity<HttpStatus> createPortfolio(@RequestHeader("Authorization") String authHeader){
         String jwtToken = authHeader.substring(7);
         String userEmail = jwtService.extractUsername(jwtToken);
@@ -35,7 +35,7 @@ public class PortfolioController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping("/getPortfolio/{id}")
+    @GetMapping("/portfolio/{id}")
     public ResponseEntity<Portfolio> getPortfolio(@PathVariable Long id){
         return new ResponseEntity<>(portfolioServiceImpl.getPortfolioById(id), HttpStatus.OK);
     }
