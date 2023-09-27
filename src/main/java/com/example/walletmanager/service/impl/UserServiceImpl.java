@@ -72,4 +72,11 @@ public class UserServiceImpl implements UserService {
         return jwtService.isTokenValid(token, user);
     }
 
+    @Override
+    public User getUserWithJwtToken(String authHeader){
+        String jwtToken = authHeader.substring(7);
+        String userEmail = jwtService.extractUsername(jwtToken);
+        return userRepository.findByEmail(userEmail).get();
+    }
+
 }

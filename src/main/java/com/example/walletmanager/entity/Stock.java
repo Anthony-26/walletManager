@@ -1,9 +1,11 @@
 package com.example.walletmanager.entity;
 
 import java.time.LocalDate;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
-// import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,7 +19,7 @@ public class Stock {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(unique = true)
     private String ticker;
 
     @Column
@@ -41,15 +43,15 @@ public class Stock {
     @Column
     private LocalDate latestTradingDay;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "portfolio_id", nullable = false)
-    private Portfolio portfolio;
+    @OneToMany(mappedBy = "stock", fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "stock-stockQuantity")
+    private Set<StockQuantity> stockQuantities;
 
     public Stock() {
     }
 
-    public Stock(String ticker, Portfolio portfolio) {
+    public Stock(String ticker, Set<StockQuantity> stockQuantities) {
         this.ticker = ticker;
-        this.portfolio = portfolio;
+        this.stockQuantities = stockQuantities;
     }
 }

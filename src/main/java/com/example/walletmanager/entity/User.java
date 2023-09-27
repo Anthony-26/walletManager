@@ -38,7 +38,7 @@ public class User implements UserDetails{
     private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @JsonManagedReference(value = "user-portfolio")
     private Set<Portfolio> portfolios = new HashSet<>();
 
     public User(){

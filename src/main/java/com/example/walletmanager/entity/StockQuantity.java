@@ -1,5 +1,7 @@
 package com.example.walletmanager.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
@@ -17,10 +19,12 @@ public class StockQuantity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stock_id", nullable = false)
+    @JsonBackReference(value = "stock-stockQuantity")
     private Stock stock;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "portfolio_id", nullable = false)
+    @JsonBackReference(value = "portfolio-stockQuantity")
     private Portfolio portfolio;
 
     @Column

@@ -20,4 +20,6 @@ public interface UserService {
     List<User> findAll();
 
     Boolean verify(String token, User user);
+
+    public User getUserWithJwtToken(String authHeader);
 }
