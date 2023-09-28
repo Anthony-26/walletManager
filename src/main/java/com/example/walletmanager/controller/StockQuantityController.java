@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -32,22 +33,31 @@ public class StockQuantityController {
     private final UserServiceImpl userServiceImpl;
     private final PortfolioServiceImpl portfolioServiceImpl;
 
-    @PostMapping("/add")
+    @PostMapping("/StockQuantities")
     public ResponseEntity<HttpStatus> addStockQuantity(@RequestBody StockQuantity stockQuantity){
         stockQuantityServiceImpl.saveStockQuantity(stockQuantity);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PostMapping("/addWithStockId")
+    @PostMapping("/basicStockQuantities")
+    public ResponseEntity<HttpStatus> addStockQuantity(@RequestBody Map<String, Integer> body){
+        StockQuantity stockQuantity = new StockQuantity();
+        stockQuantity.setQuantity(body.get("quantity"));
+        stockQuantityServiceImpl.saveStockQuantity(stockQuantity);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+
+    @PostMapping("/portfolio/{portfolioId}/stocks/{ticker}/quantities")
     public ResponseEntity<HttpStatus> addStockQuantityWithStockId(
-            @RequestParam String ticker,
-            @RequestParam Long idPortfolio,
+            @PathVariable String ticker,
+            @PathVariable Long portfolioId,
             @RequestBody Map<String, Integer> body,
             @RequestHeader("Authorization") String authHeader) {
-                
+
         StockQuantity stockQuantity = new StockQuantity(
             stockServiceImpl.getStockByTicker(ticker), 
-            portfolioServiceImpl.getPortfolioById(idPortfolio),
+            portfolioServiceImpl.getPortfolioById(portfolioId),
             body.get("quantity")
         );
         stockQuantityServiceImpl.saveStockQuantity(stockQuantity);

@@ -15,19 +15,19 @@ import com.example.walletmanager.service.impl.StockServiceImpl;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/stock")
+@RequestMapping("/api/stocks")
 @RequiredArgsConstructor
 public class StockController {
     
     private final StockServiceImpl stockServiceImpl;
 
-    @PostMapping("/stock")
+    @PostMapping("/saveStock")
     public ResponseEntity<HttpStatus> addStock(@RequestBody Stock stock){
         stockServiceImpl.saveStock(stock);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping("/stock")
+    @GetMapping("/findStock")
     public ResponseEntity<Stock> getStock(@RequestParam String ticker){
         return new ResponseEntity<>(stockServiceImpl.getStockByTicker(ticker), HttpStatus.OK);
     }

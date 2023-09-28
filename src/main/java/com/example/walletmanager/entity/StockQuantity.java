@@ -18,12 +18,12 @@ public class StockQuantity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stock_id", nullable = false)
+    @JoinColumn(name = "stock_id")
     @JsonBackReference(value = "stock-stockQuantity")
     private Stock stock;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "portfolio_id", nullable = false)
+    @JoinColumn(name = "portfolio_id")
     @JsonBackReference(value = "portfolio-stockQuantity")
     private Portfolio portfolio;
 

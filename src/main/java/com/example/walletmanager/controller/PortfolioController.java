@@ -4,7 +4,6 @@ import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -43,12 +42,6 @@ public class PortfolioController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping("/portfolio")
-    public ResponseEntity<Set<Portfolio>> getPortfolios(@RequestHeader("Authorization") String authHeader){
-        User user = userServiceImpl.getUserWithJwtToken(authHeader);
-        return new ResponseEntity<>(user.getPortfolios(), HttpStatus.OK);
-    }
-
     @PostMapping("/addStocks")
     public ResponseEntity<HttpStatus> addStockQuantity(
             @RequestHeader("Authorization") String authHeader,
@@ -71,5 +64,6 @@ public class PortfolioController {
         portfolioServiceImpl.save(portfolio);
         return new ResponseEntity<HttpStatus>(HttpStatus.CREATED);
     }
+
 
 }

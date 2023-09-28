@@ -1,6 +1,8 @@
 package com.example.walletmanager.controller;
 
+import com.example.walletmanager.entity.Portfolio;
 import com.example.walletmanager.entity.User;
+import com.example.walletmanager.service.impl.PortfolioServiceImpl;
 import com.example.walletmanager.service.impl.UserServiceImpl;
 
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/users")
@@ -17,6 +20,7 @@ import java.util.List;
 public class UserController {
 
     private final UserServiceImpl userServiceImpl;
+    private final PortfolioServiceImpl portfolioServiceImpl;
 
     @GetMapping("/profile")
     public ResponseEntity<User> getProfile(@RequestParam Long userId) {
@@ -40,5 +44,21 @@ public class UserController {
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userServiceImpl.findAll();
         return ResponseEntity.ok(users);
+    }
+
+    @PostMapping("/{userId}/portfolio")
+    public ResponseEntity<HttpStatus> createPortfolio(@PathVariable Long userId){
+
+        //name, user
+
+        // portfolioServiceImpl.save(new Portfolio(user));
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{userId}/portfolios")
+    public ResponseEntity<Set<Portfolio>> getPortfolios(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable Long userId) {
+        return new ResponseEntity<>(userServiceImpl.findUserById(userId).getPortfolios(), HttpStatus.OK);
     }
 }
