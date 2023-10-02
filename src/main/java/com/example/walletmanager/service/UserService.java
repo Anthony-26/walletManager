@@ -8,14 +8,14 @@ public interface UserService {
     User register(User user);
     
     String authenticate(String email, String password);
+
+    void updateUser(Long userId, User newUser);
+
+    void deleteUserById(Long userId);
     
     User findUserById(Long id);
 
-    User findByEmail(String email);
-
-    User update(User user);
-    
-    void deleteById(Long id);
+    User findUserByEmail(String email);
     
     List<User> findAll();
 

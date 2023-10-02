@@ -1,23 +1,15 @@
 package com.example.walletmanager.controller;
 
-import java.util.Set;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+
 
 import com.example.walletmanager.entity.Portfolio;
-import com.example.walletmanager.entity.StockQuantity;
-import com.example.walletmanager.entity.User;
-import com.example.walletmanager.repository.StockQuantityRepository;
-import com.example.walletmanager.repository.StockRepository;
-import com.example.walletmanager.repository.UserRepository;
-import com.example.walletmanager.security.JwtService;
 import com.example.walletmanager.service.impl.PortfolioServiceImpl;
 import com.example.walletmanager.service.impl.UserServiceImpl;
 
@@ -29,41 +21,43 @@ import lombok.RequiredArgsConstructor;
 public class PortfolioController {
     
     private final PortfolioServiceImpl portfolioServiceImpl;
-    private final JwtService jwtService;
-    private final UserRepository userRepository;
-    private final StockRepository stockRepository;
-    private final StockQuantityRepository stockQuantityRepository;
     private final UserServiceImpl userServiceImpl;
 
-    @PostMapping("/portfolio")
-    public ResponseEntity<HttpStatus> createPortfolio(@RequestHeader("Authorization") String authHeader){
-        User user = userServiceImpl.getUserWithJwtToken(authHeader);
-        portfolioServiceImpl.save(new Portfolio(user));
+    @PostMapping("/{userId}/portfolio")
+    public ResponseEntity<HttpStatus> createEmptyPortfolio(
+            @PathVariable Long userId,
+            @RequestBody Map<String, String> body,
+            Authentication authentication) {
+
+        if (!userServiceImpl.isTheSameUser(authentication, userId))
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+        portfolioServiceImpl.savePortfolio(new Portfolio(
+                body.get("name"),
+                userServiceImpl.findUserById(userId)));
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PostMapping("/addStocks")
-    public ResponseEntity<HttpStatus> addStockQuantity(
-            @RequestHeader("Authorization") String authHeader,
-            @RequestParam Long idPortfolio,
-            @RequestBody StockQuantity stockQuantity) {
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<Portfolio>> getUserPortfolios(
+            @PathVariable Long userId,
+            Authentication authentication) {
 
-        
-        
-
-        User user = userServiceImpl.getUserWithJwtToken(authHeader);
-        Portfolio portfolio = portfolioServiceImpl.getPortfolioById(idPortfolio);
-        if (portfolio.getUser() != user) 
-            return new ResponseEntity<HttpStatus>(HttpStatus.UNAUTHORIZED);
-        // stockQuantity.setStock(stockRepository.findByTicker("AAPL"));
-        stockRepository.save(stockQuantity.getStock());
-        stockQuantity.setPortfolio(portfolio);
-        stockQuantityRepository.save(stockQuantity);
-        portfolio.addStockQuantity(stockQuantity);
-        // stockQuantity.setPortfolio(portfolio);
-        portfolioServiceImpl.save(portfolio);
-        return new ResponseEntity<HttpStatus>(HttpStatus.CREATED);
+        if (!userServiceImpl.isTheSameUser(authentication, userId))
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(portfolioServiceImpl.findPortfoliosByUserId(userId), HttpStatus.OK);
     }
 
+    @GetMapping("/{userId}/portfolio/{portfolioId}")
+    public ResponseEntity<Portfolio> getOneUserPortfolio(
+            @PathVariable Long userId,
+            @PathVariable Long portfolioId,
+            Authentication authentication) {
+
+        if (!userServiceImpl.isTheSameUser(authentication, userId)
+                || portfolioServiceImpl.findPortfolioById(portfolioId).getUser().getId() != userId)
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(portfolioServiceImpl.findPortfolioById(portfolioId), HttpStatus.OK);
+    }
 
 }

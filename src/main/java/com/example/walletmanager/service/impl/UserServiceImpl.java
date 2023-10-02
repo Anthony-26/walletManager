@@ -8,10 +8,14 @@ import com.example.walletmanager.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -28,8 +32,6 @@ public class UserServiceImpl implements UserService {
     public User register(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(Role.ROLE_USER);
-        var jwtToken = jwtService.generateToken(user);
-        System.out.println(jwtToken);
         return userRepository.save(user);
     }
 
@@ -44,23 +46,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updateUser(Long userId, User updatedUser){
+        User userToModify = findUserById(userId);
+        userToModify.setEmail(updatedUser.getUsername());
+        userToModify.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        userRepository.save(userToModify);
+    }
+
+    @Override
+    public void deleteUserById(Long userId){
+        userRepository.deleteById(userId);
+    }
+
+    @Override
     public User findUserById(Long id) {
         return userRepository.findById(id).orElse(null);
     }
 
     @Override
-    public User findByEmail(String email) {
+    public User findUserByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
-    }
-
-    @Override
-    public User update(User user) {
-        return userRepository.save(user);
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        userRepository.deleteById(id);
     }
 
     @Override
@@ -77,6 +82,19 @@ public class UserServiceImpl implements UserService {
         String jwtToken = authHeader.substring(7);
         String userEmail = jwtService.extractUsername(jwtToken);
         return userRepository.findByEmail(userEmail).get();
+    }
+
+    public boolean isTheSameUser(Authentication authentication, Long userId){
+        if (authentication != null) {
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof UserDetails) {
+                UserDetails userDetails = (UserDetails) principal;
+                User user = findUserByEmail(userDetails.getUsername());
+                if(userId != user.getId()) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied");
+                return true;
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied");
     }
 
 }

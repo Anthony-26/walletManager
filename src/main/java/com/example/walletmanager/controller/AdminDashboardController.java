@@ -39,4 +39,10 @@ public class AdminDashboardController {
         return new ResponseEntity<List<Portfolio>>(portfolioServiceImpl.findAllPortfolios(), HttpStatus.OK);
     }
 
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userServiceImpl.findAll();
+        return ResponseEntity.ok(users);
+    }
+
 }

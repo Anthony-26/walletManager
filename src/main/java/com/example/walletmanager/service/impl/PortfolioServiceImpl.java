@@ -17,12 +17,12 @@ public class PortfolioServiceImpl implements PortfolioService {
     private final PortfolioRepository portfolioRepository;
 
     @Override
-    public void save(Portfolio portfolio) {
+    public void savePortfolio(Portfolio portfolio) {
         portfolioRepository.save(portfolio);
     }
 
     @Override
-    public Portfolio getPortfolioById(Long id) {
+    public Portfolio findPortfolioById(Long id) {
         return portfolioRepository.findById(id).get();
     }
 
@@ -31,5 +31,9 @@ public class PortfolioServiceImpl implements PortfolioService {
         return portfolioRepository.findAll();
     }
 
-    
+    @Override
+    public List<Portfolio> findPortfoliosByUserId(Long userId) {
+        return portfolioRepository.findByUser_Id(userId);
+    }
+
 }
