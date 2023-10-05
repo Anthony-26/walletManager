@@ -1,5 +1,7 @@
 package com.example.walletmanager.entity;
 
+import java.math.BigDecimal;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.*;
@@ -33,7 +35,7 @@ public class StockQuantity {
     private int quantity;
 
     @Column
-    private int value;
+    private BigDecimal value;
 
     public StockQuantity() {
     }
@@ -44,7 +46,7 @@ public class StockQuantity {
         this.quantity = quantity;
     }
 
-    public double getValue(){
-        return this.stock.getCurrentPrice() * this.quantity;
+    public BigDecimal getValue(){
+        return this.stock.getCurrentPrice().multiply(BigDecimal.valueOf(this.quantity));
     }
 }

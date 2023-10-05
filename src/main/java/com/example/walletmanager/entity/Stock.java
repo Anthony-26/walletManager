@@ -1,11 +1,13 @@
 package com.example.walletmanager.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +15,7 @@ import lombok.Setter;
 @Table(name = "stocks")
 @Getter
 @Setter
+@AllArgsConstructor
 public class Stock {
 
     @Id
@@ -23,22 +26,22 @@ public class Stock {
     private String ticker;
 
     @Column
-    private double currentPrice;
+    private BigDecimal currentPrice;
 
     @Column
-    private double openPrice;
+    private BigDecimal openPrice;
 
     @Column
-    private double previousSessionHigh;
+    private BigDecimal previousSessionHigh;
 
     @Column
-    private double previousSessionLow;
+    private BigDecimal previousSessionLow;
 
     @Column
-    private double previousSessionPercentageChange;
+    private BigDecimal previousSessionPercentageChange;
 
     @Column
-    private double previousSessionChange;
+    private BigDecimal previousSessionChange;
 
     @Column
     private LocalDate latestTradingDay;
@@ -54,4 +57,16 @@ public class Stock {
         this.ticker = ticker;
         this.stockQuantities = stockQuantities;
     }
+
+    public Stock(String ticker, BigDecimal currentPrice, BigDecimal openPrice, BigDecimal previousSessionHigh, BigDecimal previousSessionLow, BigDecimal previousSessionPercentageChange, BigDecimal previousSessionChange, LocalDate latestTradingDay) {
+        this.ticker = ticker;
+        this.currentPrice = currentPrice;
+        this.openPrice = openPrice;
+        this.previousSessionHigh = previousSessionHigh;
+        this.previousSessionLow = previousSessionLow;
+        this.previousSessionPercentageChange = previousSessionPercentageChange;
+        this.previousSessionChange = previousSessionChange;
+        this.latestTradingDay = latestTradingDay;
+    }
+
 }

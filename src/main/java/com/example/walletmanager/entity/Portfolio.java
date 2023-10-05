@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,7 +34,7 @@ public class Portfolio {
     private Set<StockQuantity> stocksQuantities = new HashSet<>();
 
     @Column
-    private double totalCurrentValue;
+    private BigDecimal totalCurrentValue;
 
     public Portfolio() {
     }
@@ -49,19 +50,19 @@ public class Portfolio {
 
     public void addStockQuantity(StockQuantity stockQuantity) {
         this.stocksQuantities.add(stockQuantity);
-        this.totalCurrentValue += stockQuantity.getValue();
+        this.totalCurrentValue = this.totalCurrentValue.add(stockQuantity.getValue());
     }
     
     public void removeStockQuantity(StockQuantity stockQuantity) {
         this.stocksQuantities.remove(stockQuantity);
-        this.totalCurrentValue -= stockQuantity.getValue();
+        this.totalCurrentValue = this.totalCurrentValue.subtract(stockQuantity.getValue());
     }
     
     public void updateStockQuantity(StockQuantity stockQuantity, int newQuantity) {
-        double oldValue = stockQuantity.getValue();
+        BigDecimal oldValue = stockQuantity.getValue();
         stockQuantity.setQuantity(newQuantity);
-        double newValue = stockQuantity.getValue();
-        this.totalCurrentValue += (newValue - oldValue);
+        BigDecimal newValue = stockQuantity.getValue();
+        this.totalCurrentValue = this.totalCurrentValue.add(newValue.subtract(oldValue));
     }
 
     // public static boolean isStockPresent()

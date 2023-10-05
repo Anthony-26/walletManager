@@ -2,12 +2,7 @@ package com.example.walletmanager.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.walletmanager.entity.Stock;
 import com.example.walletmanager.service.impl.StockServiceImpl;
@@ -18,18 +13,18 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/stocks")
 @RequiredArgsConstructor
 public class StockController {
-    
+
     private final StockServiceImpl stockServiceImpl;
 
-    @PostMapping("/saveStock")
-    public ResponseEntity<HttpStatus> addStock(@RequestBody Stock stock){
-        stockServiceImpl.saveStock(stock);
+    @PostMapping("/stock")
+    public ResponseEntity<HttpStatus> addStock(@RequestParam String ticker) {
+        stockServiceImpl.saveStock(ticker);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping("/findStock")
-    public ResponseEntity<Stock> getStock(@RequestParam String ticker){
-        return new ResponseEntity<>(stockServiceImpl.getStockByTicker(ticker), HttpStatus.OK);
+    @GetMapping("/{ticker}")
+    public ResponseEntity<Stock> getStock(@PathVariable String ticker) {
+        return new ResponseEntity<>(stockServiceImpl.findStockByTicker(ticker), HttpStatus.OK);
     }
 
 }

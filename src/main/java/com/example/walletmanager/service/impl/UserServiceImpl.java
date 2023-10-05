@@ -2,20 +2,19 @@ package com.example.walletmanager.service.impl;
 
 import com.example.walletmanager.entity.Role;
 import com.example.walletmanager.entity.User;
+import com.example.walletmanager.exception.CustomExceptions.UserMismatchException;
 import com.example.walletmanager.repository.UserRepository;
 import com.example.walletmanager.security.JwtService;
 import com.example.walletmanager.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -90,11 +89,11 @@ public class UserServiceImpl implements UserService {
             if (principal instanceof UserDetails) {
                 UserDetails userDetails = (UserDetails) principal;
                 User user = findUserByEmail(userDetails.getUsername());
-                if(userId != user.getId()) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied");
+                if(userId != user.getId()) throw new UserMismatchException("Access Denied");
                 return true;
             }
         }
-        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied");
+        throw new UserMismatchException("Not Authenticated");
     }
 
 }

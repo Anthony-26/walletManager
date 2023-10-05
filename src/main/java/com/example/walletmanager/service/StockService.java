@@ -4,10 +4,10 @@ import com.example.walletmanager.entity.Stock;
 
 public interface StockService {
 
-    public void saveStock(Stock stock);
+    public void saveStock(String ticker);
 
-    public Stock getStockByTicker(String ticker);
+    public Stock findStockByTicker(String ticker);
 
-    public Stock getStockById(Long id);
-    
+    public Stock findStockById(Long id);
+
 }

@@ -18,25 +18,24 @@ public class UserController {
 
     private final UserServiceImpl userServiceImpl;
 
-    @GetMapping("/profile/{userId}")
+    @GetMapping("/{userId}")
     public ResponseEntity<User> getProfile(@PathVariable Long userId, Authentication authentication) {
         userServiceImpl.isTheSameUser(authentication, userId);
         User user = userServiceImpl.findUserById(userId);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @PutMapping("/profile/{userId}")
-    public ResponseEntity<HttpStatus> updateProfile(@PathVariable Long userId, @RequestBody User updatedUser, Authentication authentication) {
-        if (!userServiceImpl.isTheSameUser(authentication, userId))
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    @PutMapping("/{userId}")
+    public ResponseEntity<HttpStatus> updateProfile(@PathVariable Long userId, @RequestBody User updatedUser,
+            Authentication authentication) {
+        userServiceImpl.isTheSameUser(authentication, userId);
         userServiceImpl.updateUser(userId, updatedUser);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/profile/{userId}")
+    @DeleteMapping("/{userId}")
     public ResponseEntity<HttpStatus> deleteProfile(@PathVariable Long userId, Authentication authentication) {
-        if (!userServiceImpl.isTheSameUser(authentication, userId))
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        userServiceImpl.isTheSameUser(authentication, userId);
         userServiceImpl.deleteUserById(userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

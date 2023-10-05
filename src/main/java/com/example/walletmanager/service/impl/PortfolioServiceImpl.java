@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.example.walletmanager.entity.Portfolio;
+import com.example.walletmanager.exception.CustomExceptions.PortfolioNotFoundException;
 import com.example.walletmanager.repository.PortfolioRepository;
 import com.example.walletmanager.service.PortfolioService;
 
@@ -23,7 +24,8 @@ public class PortfolioServiceImpl implements PortfolioService {
 
     @Override
     public Portfolio findPortfolioById(Long id) {
-        return portfolioRepository.findById(id).get();
+        if(id == null) throw new PortfolioNotFoundException("Portfolio cannot be null");
+        return portfolioRepository.findById(id).orElseThrow(() -> new PortfolioNotFoundException("Portfolio does not exist"));
     }
 
     @Override

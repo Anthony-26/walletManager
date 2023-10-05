@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,21 +13,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.walletmanager.DTO.StockQuantityDTO;
 import com.example.walletmanager.entity.StockQuantity;
+import com.example.walletmanager.exception.CustomExceptions.IncorrectBodyInformationsException;
 import com.example.walletmanager.service.impl.PortfolioServiceImpl;
 import com.example.walletmanager.service.impl.StockQuantityServiceImpl;
 import com.example.walletmanager.service.impl.StockServiceImpl;
+import com.example.walletmanager.service.impl.UserServiceImpl;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/stockQuantity")
+@RequestMapping("/api/stockQuantities")
 @RequiredArgsConstructor
 public class StockQuantityController {
 
     private final StockQuantityServiceImpl stockQuantityServiceImpl;
     private final StockServiceImpl stockServiceImpl;
     private final PortfolioServiceImpl portfolioServiceImpl;
+    private final UserServiceImpl userServiceImpl;
 
     // @PostMapping("/StockQuantities")
     // public ResponseEntity<HttpStatus> addStockQuantity(@RequestBody StockQuantity
@@ -48,12 +54,16 @@ public class StockQuantityController {
     public ResponseEntity<HttpStatus> addStockQuantityWithStockTicker(
             @PathVariable String ticker,
             @PathVariable Long portfolioId,
-            @RequestBody Map<String, Integer> body) {
+            @Valid @RequestBody StockQuantityDTO stockQuantityDTO,
+            Authentication authentication) {
 
+        userServiceImpl.isTheSameUser(authentication,
+                portfolioServiceImpl.findPortfolioById(portfolioId).getUser().getId());
+            
         StockQuantity stockQuantity = new StockQuantity(
-                stockServiceImpl.getStockByTicker(ticker),
+                stockServiceImpl.findStockByTicker(ticker),
                 portfolioServiceImpl.findPortfolioById(portfolioId),
-                body.get("quantity"));
+                stockQuantityDTO.getQuantity());
         stockQuantityServiceImpl.saveStockQuantity(stockQuantity);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

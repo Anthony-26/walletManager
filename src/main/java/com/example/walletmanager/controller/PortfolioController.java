@@ -29,9 +29,7 @@ public class PortfolioController {
             @RequestBody Map<String, String> body,
             Authentication authentication) {
 
-        if (!userServiceImpl.isTheSameUser(authentication, userId))
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-
+        userServiceImpl.isTheSameUser(authentication, userId);
         portfolioServiceImpl.savePortfolio(new Portfolio(
                 body.get("name"),
                 userServiceImpl.findUserById(userId)));
@@ -43,8 +41,7 @@ public class PortfolioController {
             @PathVariable Long userId,
             Authentication authentication) {
 
-        if (!userServiceImpl.isTheSameUser(authentication, userId))
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        userServiceImpl.isTheSameUser(authentication, userId);
         return new ResponseEntity<>(portfolioServiceImpl.findPortfoliosByUserId(userId), HttpStatus.OK);
     }
 
@@ -54,8 +51,8 @@ public class PortfolioController {
             @PathVariable Long portfolioId,
             Authentication authentication) {
 
-        if (!userServiceImpl.isTheSameUser(authentication, userId)
-                || portfolioServiceImpl.findPortfolioById(portfolioId).getUser().getId() != userId)
+        userServiceImpl.isTheSameUser(authentication, userId);
+        if (portfolioServiceImpl.findPortfolioById(portfolioId).getUser().getId() != userId)
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         return new ResponseEntity<>(portfolioServiceImpl.findPortfolioById(portfolioId), HttpStatus.OK);
     }
