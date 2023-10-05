@@ -38,6 +38,7 @@ public class User implements UserDetails{
     private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "user-portfolio")
     private Set<Portfolio> portfolios = new HashSet<>();
 
     public User(){
@@ -49,7 +50,6 @@ public class User implements UserDetails{
     }
 
     @Override
-    @JsonManagedReference
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }

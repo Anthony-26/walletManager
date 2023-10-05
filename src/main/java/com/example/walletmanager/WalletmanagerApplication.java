@@ -28,7 +28,7 @@ public class WalletmanagerApplication implements ApplicationListener<ContextRefr
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 
 		/* Adding ADMIN account to database */
-		if(userServiceImpl.findByEmail("admin") == null){
+		if(userServiceImpl.findUserByEmail("admin") == null){
 			User admin = new User("admin", "$2a$10$IxyyhWP1L837hrPM1kvzLO7/A/6B5t3nqc7Drb5dTjav9VJbwvr6W");
 			admin.setRole(Role.ROLE_ADMIN);
 			userRepository.save(admin);

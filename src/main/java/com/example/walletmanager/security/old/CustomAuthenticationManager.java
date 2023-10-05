@@ -24,7 +24,7 @@ public class CustomAuthenticationManager implements AuthenticationManager {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException{
         
-        User user = userServiceImpl.findByEmail(authentication.getName());
+        User user = userServiceImpl.findUserByEmail(authentication.getName());
         
         System.out.println(authentication.getCredentials().toString());
         System.out.println("Result : " + passwordEncoder.matches(authentication.getCredentials().toString(), user.getPassword()));

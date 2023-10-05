@@ -8,16 +8,18 @@ public interface UserService {
     User register(User user);
     
     String authenticate(String email, String password);
-    
-    User findById(Long id);
 
-    User findByEmail(String email);
+    void updateUser(Long userId, User newUser);
 
-    User update(User user);
+    void deleteUserById(Long userId);
     
-    void deleteById(Long id);
+    User findUserById(Long id);
+
+    User findUserByEmail(String email);
     
     List<User> findAll();
 
     Boolean verify(String token, User user);
+
+    public User getUserWithJwtToken(String authHeader);
 }

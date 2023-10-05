@@ -2,6 +2,7 @@ package com.example.walletmanager.service.impl;
 
 import com.example.walletmanager.entity.Role;
 import com.example.walletmanager.entity.User;
+import com.example.walletmanager.exception.CustomExceptions.UserMismatchException;
 import com.example.walletmanager.repository.UserRepository;
 import com.example.walletmanager.security.JwtService;
 import com.example.walletmanager.service.UserService;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +31,6 @@ public class UserServiceImpl implements UserService {
     public User register(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(Role.ROLE_USER);
-        var jwtToken = jwtService.generateToken(user);
-        System.out.println(jwtToken);
         return userRepository.save(user);
     }
 
@@ -44,23 +45,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(Long id) {
+    public void updateUser(Long userId, User updatedUser){
+        User userToModify = findUserById(userId);
+        userToModify.setEmail(updatedUser.getUsername());
+        userToModify.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        userRepository.save(userToModify);
+    }
+
+    @Override
+    public void deleteUserById(Long userId){
+        userRepository.deleteById(userId);
+    }
+
+    @Override
+    public User findUserById(Long id) {
         return userRepository.findById(id).orElse(null);
     }
 
     @Override
-    public User findByEmail(String email) {
+    public User findUserByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
-    }
-
-    @Override
-    public User update(User user) {
-        return userRepository.save(user);
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        userRepository.deleteById(id);
     }
 
     @Override
@@ -70,6 +74,26 @@ public class UserServiceImpl implements UserService {
 
     public Boolean verify(String token, User user) {
         return jwtService.isTokenValid(token, user);
+    }
+
+    @Override
+    public User getUserWithJwtToken(String authHeader){
+        String jwtToken = authHeader.substring(7);
+        String userEmail = jwtService.extractUsername(jwtToken);
+        return userRepository.findByEmail(userEmail).get();
+    }
+
+    public boolean isTheSameUser(Authentication authentication, Long userId){
+        if (authentication != null) {
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof UserDetails) {
+                UserDetails userDetails = (UserDetails) principal;
+                User user = findUserByEmail(userDetails.getUsername());
+                if(userId != user.getId()) throw new UserMismatchException("Access Denied");
+                return true;
+            }
+        }
+        throw new UserMismatchException("Not Authenticated");
     }
 
 }

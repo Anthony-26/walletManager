@@ -5,10 +5,11 @@ import com.example.walletmanager.service.impl.UserServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -17,27 +18,25 @@ public class UserController {
 
     private final UserServiceImpl userServiceImpl;
 
-    @GetMapping("/profile")
-    public ResponseEntity<User> getProfile(@RequestParam Long userId) {
-        User user = userServiceImpl.findById(userId);
-        return ResponseEntity.ok(user);
+    @GetMapping("/{userId}")
+    public ResponseEntity<User> getProfile(@PathVariable Long userId, Authentication authentication) {
+        userServiceImpl.isTheSameUser(authentication, userId);
+        User user = userServiceImpl.findUserById(userId);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @PutMapping("/profile")
-    public ResponseEntity<User> updateProfile(@RequestBody User user) {
-        User updatedUser = userServiceImpl.update(user);
-        return ResponseEntity.ok(updatedUser);
+    @PutMapping("/{userId}")
+    public ResponseEntity<HttpStatus> updateProfile(@PathVariable Long userId, @RequestBody User updatedUser,
+            Authentication authentication) {
+        userServiceImpl.isTheSameUser(authentication, userId);
+        userServiceImpl.updateUser(userId, updatedUser);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
-        userServiceImpl.deleteById(userId);
-        return ResponseEntity.ok("Utilisateur supprimé avec succès");
-    }
-
-    @GetMapping("/all")
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userServiceImpl.findAll();
-        return ResponseEntity.ok(users);
+    public ResponseEntity<HttpStatus> deleteProfile(@PathVariable Long userId, Authentication authentication) {
+        userServiceImpl.isTheSameUser(authentication, userId);
+        userServiceImpl.deleteUserById(userId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.walletmanager.security;
 
 import java.security.Key;
+import java.security.SignatureException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +10,8 @@ import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+
+import com.example.walletmanager.exception.CustomExceptions.JwtTokenInvalidException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -75,12 +78,16 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    private Claims extractAllClaims(String token){
-        return Jwts.parserBuilder()
+    private Claims extractAllClaims(String token) {
+        // try {
+            return Jwts.parserBuilder()
                     .setSigningKey(getSignInKey())
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
+        // } catch (SignatureException e) {
+        //     throw new JwtTokenInvalidException("Wrong token signature", e.getCause());
+        // }
     }
 
     private Key getSignInKey(){

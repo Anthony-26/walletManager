@@ -1,42 +1,60 @@
 package com.example.walletmanager.controller;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+
 
 import com.example.walletmanager.entity.Portfolio;
-import com.example.walletmanager.entity.User;
-import com.example.walletmanager.repository.UserRepository;
-import com.example.walletmanager.security.JwtService;
 import com.example.walletmanager.service.impl.PortfolioServiceImpl;
+import com.example.walletmanager.service.impl.UserServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/portfolio")
+@RequestMapping("/api/portfolios")
 @RequiredArgsConstructor
 public class PortfolioController {
     
     private final PortfolioServiceImpl portfolioServiceImpl;
-    private final JwtService jwtService;
-    private final UserRepository userRepository;
+    private final UserServiceImpl userServiceImpl;
 
-    @PostMapping("/createPortfolio")
-    public ResponseEntity<HttpStatus> createPortfolio(@RequestHeader("Authorization") String authHeader){
-        String jwtToken = authHeader.substring(7);
-        String userEmail = jwtService.extractUsername(jwtToken);
-        User user = userRepository.findByEmail(userEmail).get();
-        portfolioServiceImpl.save(new Portfolio(user));
+    @PostMapping("/{userId}/portfolio")
+    public ResponseEntity<HttpStatus> createEmptyPortfolio(
+            @PathVariable Long userId,
+            @RequestBody Map<String, String> body,
+            Authentication authentication) {
+
+        userServiceImpl.isTheSameUser(authentication, userId);
+        portfolioServiceImpl.savePortfolio(new Portfolio(
+                body.get("name"),
+                userServiceImpl.findUserById(userId)));
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping("/getPortfolio/{id}")
-    public ResponseEntity<Portfolio> getPortfolio(@PathVariable Long id){
-        return new ResponseEntity<>(portfolioServiceImpl.getPortfolioById(id), HttpStatus.OK);
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<Portfolio>> getUserPortfolios(
+            @PathVariable Long userId,
+            Authentication authentication) {
+
+        userServiceImpl.isTheSameUser(authentication, userId);
+        return new ResponseEntity<>(portfolioServiceImpl.findPortfoliosByUserId(userId), HttpStatus.OK);
     }
+
+    @GetMapping("/{userId}/portfolio/{portfolioId}")
+    public ResponseEntity<Portfolio> getOneUserPortfolio(
+            @PathVariable Long userId,
+            @PathVariable Long portfolioId,
+            Authentication authentication) {
+
+        userServiceImpl.isTheSameUser(authentication, userId);
+        if (portfolioServiceImpl.findPortfolioById(portfolioId).getUser().getId() != userId)
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(portfolioServiceImpl.findPortfolioById(portfolioId), HttpStatus.OK);
+    }
+
 }
