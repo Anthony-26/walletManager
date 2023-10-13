@@ -1,7 +1,6 @@
 package com.example.walletmanager.security;
 
 import java.security.Key;
-import java.security.SignatureException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,11 +12,15 @@ import org.springframework.stereotype.Component;
 
 import com.example.walletmanager.exception.CustomExceptions.JwtTokenInvalidException;
 
+import io.jsonwebtoken.ClaimJwtException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.*;
 
 @Component
 public class JwtService {
@@ -79,15 +82,23 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        // try {
+        try {
             return Jwts.parserBuilder()
                     .setSigningKey(getSignInKey())
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-        // } catch (SignatureException e) {
-        //     throw new JwtTokenInvalidException("Wrong token signature", e.getCause());
-        // }
+        } catch (ExpiredJwtException e) {
+            throw new JwtTokenInvalidException("Token expired");
+        } catch (ClaimJwtException e){
+            throw new JwtTokenInvalidException("Wrong token signature");
+        } catch (MalformedJwtException e){
+            throw new JwtTokenInvalidException("Token not correctly constructed");
+        } catch(SignatureException e){
+            throw new JwtTokenInvalidException("Incorrect token signature");
+        } catch(JwtException e){
+            throw new JwtTokenInvalidException("JWT Exception");
+        }
     }
 
     private Key getSignInKey(){

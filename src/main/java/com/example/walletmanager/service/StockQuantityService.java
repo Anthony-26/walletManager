@@ -6,6 +6,6 @@ public interface StockQuantityService {
 
     public void saveStockQuantity(StockQuantity stockQuantity);
 
-    public StockQuantity getStockQuantityById(Long id);
+    public StockQuantity findStockQuantityById(Long id);
     
 }

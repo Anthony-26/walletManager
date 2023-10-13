@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -47,7 +47,7 @@ public class Stock {
     private LocalDate latestTradingDay;
 
     @OneToMany(mappedBy = "stock", fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "stock-stockQuantity")
+    @JsonIgnore
     private Set<StockQuantity> stockQuantities;
 
     public Stock() {

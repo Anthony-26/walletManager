@@ -5,6 +5,7 @@ target/
 !**/src/test/**/target/
 src/main/resources/
 custom/
+myApp.log
 
 ### STS ###
 .apt_generated

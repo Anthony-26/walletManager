@@ -3,6 +3,7 @@ package com.example.walletmanager.service.impl;
 import org.springframework.stereotype.Service;
 
 import com.example.walletmanager.entity.StockQuantity;
+import com.example.walletmanager.exception.CustomExceptions.StockQuantityNotFoundException;
 import com.example.walletmanager.repository.StockQuantityRepository;
 import com.example.walletmanager.service.StockQuantityService;
 
@@ -20,8 +21,8 @@ public class StockQuantityServiceImpl implements StockQuantityService{
     }
 
     @Override
-    public StockQuantity getStockQuantityById(Long id) {
-        return stockQuantityRepository.findById(id).get();
+    public StockQuantity findStockQuantityById(Long id) {
+        return stockQuantityRepository.findById(id).orElseThrow(() -> new StockQuantityNotFoundException("StockQuantity does not exist"));
     }
 
     

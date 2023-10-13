@@ -28,7 +28,7 @@ public class AlphaVantageServiceImpl implements AlphaVantageService {
     @Override
     public Stock findStockByTicker(String ticker) {
             if (ticker == null || ticker.trim().isEmpty()) 
-                throw new TickerNotFoundException("Ticker cannot be null or empty");
+                throw new IllegalArgumentException("Ticker cannot be null or empty");
             
 
             WebClient client = WebClient.builder().baseUrl("https://www.alphavantage.co").build();
@@ -51,10 +51,11 @@ public class AlphaVantageServiceImpl implements AlphaVantageService {
 }
 
     private Stock extractStockFromResponse(String response) {
+        // response = "{ invalide: json";
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(response);
-            JsonNode globalQuoteNode = rootNode.get("Global Quote");
+            JsonNode globalQuoteNode = rootNode.get("Global Quoete");
 
             if(!globalQuoteNode.has("01. symbol")) throw new TickerNotFoundException("Ticker does not exist"); 
 

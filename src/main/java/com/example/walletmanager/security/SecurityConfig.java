@@ -15,6 +15,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+// import com.example.walletmanager.exception.DelegatedAuthenticationEntryPoint;
+
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -24,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
+    // private final DelegatedAuthenticationEntryPoint authEntryPoint;
     // private final AuthenticationProvider authenticationProvider;
 
     @Bean
@@ -37,6 +40,9 @@ public class SecurityConfig {
                     .anyRequest()
                     .authenticated())
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // .exceptionHandling(exceptionHandling ->
+                // exceptionHandling.authenticationEntryPoint(authEntryPoint))
 
                 // .authenticationProvider(authenticationProvider)     /*  Allow to add a AuthenticationProvider as a provider
                 //                                                         Order is important

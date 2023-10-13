@@ -10,6 +10,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.example.walletmanager.exception.RestResponseStatusExceptionResolver;
+import com.example.walletmanager.exception.CustomExceptions.JwtTokenInvalidException;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +25,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final RestResponseStatusExceptionResolver exceptionResolver;
 
     @Override
     protected void doFilterInternal(
@@ -29,6 +33,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
         HttpServletResponse response, 
         FilterChain filterChain)
     throws ServletException, IOException {
+
+        try {
         
             final String authHeader = request.getHeader("Authorization");
             final String jwt;
@@ -51,6 +57,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
                 }
             }
         filterChain.doFilter(request, response);
+        } catch(JwtTokenInvalidException ex) {
+            exceptionResolver.resolveException(request, response, null, ex);
+        }
     }
     
 }

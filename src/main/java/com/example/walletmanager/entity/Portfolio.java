@@ -41,27 +41,25 @@ public class Portfolio {
 
     public Portfolio(User user) {
         this.user = user;
+        this.totalCurrentValue = new BigDecimal(0);
     }
 
     public Portfolio(String name, User user) {
         this.name = name;
         this.user = user;
+        this.totalCurrentValue = new BigDecimal(0);
     }
 
-    public void addStockQuantity(StockQuantity stockQuantity) {
-        this.stocksQuantities.add(stockQuantity);
-        this.totalCurrentValue = this.totalCurrentValue.add(stockQuantity.getValue());
+    public void addTotalCurrentValue(BigDecimal value) {
+        this.totalCurrentValue = this.totalCurrentValue.add(value);
     }
-    
-    public void removeStockQuantity(StockQuantity stockQuantity) {
+
+    public void substractTotalCurrentValue(StockQuantity stockQuantity) {
         this.stocksQuantities.remove(stockQuantity);
         this.totalCurrentValue = this.totalCurrentValue.subtract(stockQuantity.getValue());
     }
-    
-    public void updateStockQuantity(StockQuantity stockQuantity, int newQuantity) {
-        BigDecimal oldValue = stockQuantity.getValue();
-        stockQuantity.setQuantity(newQuantity);
-        BigDecimal newValue = stockQuantity.getValue();
+
+    public void updateTotalCurrentValue(BigDecimal oldValue, BigDecimal newValue) {
         this.totalCurrentValue = this.totalCurrentValue.add(newValue.subtract(oldValue));
     }
 

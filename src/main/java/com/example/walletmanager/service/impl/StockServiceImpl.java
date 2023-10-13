@@ -24,7 +24,7 @@ public class StockServiceImpl implements StockService {
 
     @Override
     public Stock findStockByTicker(String ticker) {
-        Optional<Stock> optionalStock = stockRepository.findByTicker(null);
+        Optional<Stock> optionalStock = stockRepository.findByTicker(ticker);
         if(optionalStock.isPresent()) return optionalStock.get();
         
         Stock stock = alphaVantageServiceImpl.findStockByTicker(ticker);

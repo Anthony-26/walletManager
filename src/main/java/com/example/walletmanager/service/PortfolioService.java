@@ -14,4 +14,6 @@ public interface PortfolioService {
 
     public List<Portfolio> findAllPortfolios();
 
+    public boolean isStockQuantityExisting(Long portfolioId, String ticker);
+
 }

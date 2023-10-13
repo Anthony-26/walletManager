@@ -24,7 +24,7 @@ public class PortfolioServiceImpl implements PortfolioService {
 
     @Override
     public Portfolio findPortfolioById(Long id) {
-        if(id == null) throw new PortfolioNotFoundException("Portfolio cannot be null");
+        if(id == null) throw new IllegalArgumentException("Portfolio cannot be null");
         return portfolioRepository.findById(id).orElseThrow(() -> new PortfolioNotFoundException("Portfolio does not exist"));
     }
 
@@ -36,6 +36,13 @@ public class PortfolioServiceImpl implements PortfolioService {
     @Override
     public List<Portfolio> findPortfoliosByUserId(Long userId) {
         return portfolioRepository.findByUser_Id(userId);
+    }
+
+    @Override
+    public boolean isStockQuantityExisting(Long portfolioId, String ticker) {
+        if(portfolioId == null) throw new IllegalArgumentException("Portfolio cannot be null");
+        if(ticker == null) throw new IllegalArgumentException("Ticker cannot be null");
+        return portfolioRepository.countByPortfolioIdAndTicker(portfolioId, ticker) > 0L;
     }
 
 }

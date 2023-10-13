@@ -3,6 +3,7 @@ package com.example.walletmanager.entity;
 import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -17,17 +18,21 @@ public class StockQuantity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stock_id")
-    @JsonBackReference(value = "stock-stockQuantity")
+    @JsonIgnore
     private Stock stock;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "portfolio_id")
     @JsonBackReference(value = "portfolio-stockQuantity")
     private Portfolio portfolio;
+
+    @Column
+    private String ticker;
 
     @Column
     @NotNull
@@ -44,9 +49,15 @@ public class StockQuantity {
         this.stock = stock;
         this.portfolio = portfolio;
         this.quantity = quantity;
+        this.ticker = stock.getTicker();
     }
 
     public BigDecimal getValue(){
         return this.stock.getCurrentPrice().multiply(BigDecimal.valueOf(this.quantity));
     }
+
+    public String getTicker(){
+        return this.stock.getTicker();
+    }
+    
 }
